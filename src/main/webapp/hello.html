@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<script>
+	//자바스크립트로 유효성 체크 ==>클라이언트 쪽에서 체크하는 방식
+	function check(){
+		if(!f1.userid.value){
+			alert('아이디를 입력하세요');
+			f1.userid.focus();
+			return;
+		}
+		if(!f1.pwd.value){
+			alert('비밀번호를 입력하세요');
+			f1.pwd.focus();
+			return;
+		}
+		f1.submit();
+	}
+</script>
+
+</head>
+<body>
+<div style="text-align:center;color:red">
+	<h1>Hello MyWeb~~(Get방식/Post방식 테스트)</h1>
+	<form name="f1" action="Get" method="get">
+		<h1>GET방식 테스트</h1>
+		아이디:<input type="text" name="userid"><p>
+		비밀번호:<input type="password" name="pwd"><p>
+		<button type="button" onclick="check();">로그인</button>
+		
+	</form>
+	
+	<hr>
+	<form name="f2" action="Post" method="post">
+		<h1>POST방식 테스트</h1>
+		아이디:<input type="text" name="userid"><p>
+		비밀번호:<input type="password" name="pwd"><p>
+		<button>로그인</button>
+	</form>
+	
+</div>
+
+</body>
+</html>
