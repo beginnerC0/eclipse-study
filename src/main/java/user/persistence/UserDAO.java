@@ -1,17 +1,31 @@
 package user.persistence;
-import jdbc.util.*; 
-import java.sql.*;
-import java.util.*;
-import user.domain.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import common.pool.ConnectionPoolBean;
+import jdbc.util.DAOBase;
+import jdbc.util.DBUtil;
+import user.domain.UserVO;
 
 public class UserDAO extends DAOBase{
 	
+	//private ConnectionPoolBean pool;//property
 	
 	public UserDAO() {
+		super(); //ds룩업을 수행함
 		System.out.println("UserDAO()생성됨...");
 	}
-	
-	
+		
+//	public ConnectionPoolBean getPool() {
+//		return pool;
+//	}
+
+//	public void setPool(ConnectionPoolBean pool) {
+//		this.pool = pool;
+//	}
+
 	/**아이디 중복 체크 -SELECT문 수행
 	 * WHERE절에 USERID로 PK(IDX)를 가져온다
 	 * RS의 커서를 이동했을 때 TRUE반환하면 "해당 아이디는 이미 존재==>FALSE를 반환"
@@ -19,7 +33,10 @@ public class UserDAO extends DAOBase{
 	 *  */
 	public boolean idCheck(String userid) throws SQLException{
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			//con=pool.getConnection();//ConnectionPool로 부터 이미 준비된 커넥션을 받아오기
+			con=ds.getConnection();
+					
 			String sql="select idx from member where userid=?";
 			ps=con.prepareStatement(sql);
 			ps.setString(1, userid);
@@ -27,10 +44,21 @@ public class UserDAO extends DAOBase{
 			boolean b=rs.next(); //true를 반환하면 해당 아이디가 있음
 			return !b;
 		}finally {
-			close();
+			super.close();
 		}
 	}
 	
+//	public void close() {
+//		try {
+//			if(rs!=null) rs.close();
+//			if(ps!=null) ps.close();
+//			if(con!=null) pool.returnConnection(con);
+//			//커넥션 풀에 반납을 한다.
+//				
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	/**회원가입-INSERT문 수행
 	 * 회원번호: MEMBER_SEQ시퀀스를 이용
@@ -38,7 +66,9 @@ public class UserDAO extends DAOBase{
 	 * */
 	public int createUser(UserVO user) throws SQLException{
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			//con=pool.getConnection();//ConnectionPool로 부터 이미 준비된 커넥션을 받아오기
+			con=ds.getConnection();//DBCP 커넥션 풀에서 커넥션 얻어오기
 			String sql="insert into member values(member_seq.nextval,"
 					+"?,?,?,?,?,?,?,?,?,sysdate,1000,0)";
 			ps=con.prepareStatement(sql);
@@ -60,7 +90,9 @@ public class UserDAO extends DAOBase{
 	/**총 회원수 구하기*/
 	public int getTotalUser() throws SQLException{
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			//con=pool.getConnection();//ConnectionPool로 부터 이미 준비된 커넥션을 받아오기
+			con=ds.getConnection();
 			String sql="select count(idx) from member";
 			ps=con.prepareStatement(sql);
 			rs=ps.executeQuery();
@@ -89,7 +121,8 @@ public class UserDAO extends DAOBase{
 			}
 			
 			
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="select count(idx) from member where "+colName+" like ?";
 			ps=con.prepareStatement(sql);
 			ps.setString(1, "%"+keyword+"%");
@@ -120,7 +153,9 @@ public class UserDAO extends DAOBase{
 
 	public List<UserVO> listUser(int start, int end) throws SQLException{
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			//con=pool.getConnection();//ConnectionPool로 부터 이미 준비된 커넥션을 받아오기
+			con=ds.getConnection();
 			String sql="select * from(\r\n"
 					+ " select rownum rn, a.* from(\r\n"
 					+ " (select * from member order by idx desc) a\r\n"
@@ -164,7 +199,8 @@ public class UserDAO extends DAOBase{
 	/**회원번호(idx- pk)로 회원정보 가져오기*/
 	public UserVO selectUser(String idx) throws SQLException{
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="select * from member where idx=?";
 			ps=con.prepareStatement(sql);
 			ps.setString(1, idx);
@@ -184,6 +220,7 @@ public class UserDAO extends DAOBase{
 	public int updateUser(UserVO user) throws SQLException{
 		try {
 					con=DBUtil.getCon();
+					con=ds.getConnection();
 				//	String sql="update member set name=?, userid=?, pwd=?, hp1=?, hp2=?, hp3=?";
 				//		   sql+=" , zipcode=?, addr1=?, addr2=?, mstate=? where idx=?";
 			
@@ -221,7 +258,8 @@ public class UserDAO extends DAOBase{
 	/**PK로 회원정보 삭제 처리*/
 	public int deleteUser(String idx)  throws SQLException{
 		try{
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="delete from member where idx=?";
 			ps=con.prepareStatement(sql);
 			ps.setString(1, idx);
@@ -246,7 +284,8 @@ public class UserDAO extends DAOBase{
 			case "3": colName="hp1||hp2||hp3";
 				break;
 			}
-			con =DBUtil.getCon();
+			//con =DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="select * from member where "+colName+" like ?";
 			
 			System.out.println(sql);
@@ -273,7 +312,8 @@ public class UserDAO extends DAOBase{
 			case "3": colName="hp1||hp2||hp3";
 				break;
 			}
-			con =DBUtil.getCon();
+			//con =DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="select * from( "
 					+ " select rownum rn, a.* from( "
 					+ " (select * from member  "
@@ -324,7 +364,8 @@ public class UserDAO extends DAOBase{
 
 	public UserVO selectUserById(String id) throws SQLException {
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="select * from member_view where userid=?";
 			ps=con.prepareStatement(sql);
 			ps.setString(1, id);
@@ -344,7 +385,8 @@ public class UserDAO extends DAOBase{
 	
 	public List<UserVO> zipCheck(String zipcode) throws SQLException {
 		try {
-			con=DBUtil.getCon();
+			//con=DBUtil.getCon();
+			con=ds.getConnection();
 			String sql="select * from zipcode where doro_kor||bld_origin_num like ?";
 			ps=con.prepareStatement(sql);
 			ps.setString(1, "%"+zipcode+"%");			

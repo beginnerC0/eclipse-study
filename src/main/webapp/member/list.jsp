@@ -7,7 +7,11 @@
 <jsp:include page="/top.jsp"/>
 <%-- UserDAO빈 객체 생성해서 ==> useBean액션 사용 
 listUser() 호출한 뒤에 받아온 List를 반복문 돌면서 출력 --%>
-<jsp:useBean id="userDao" class="user.persistence.UserDAO" scope="session"/>
+<%-- <jsp:useBean id="conPool" class="common.pool.ConnectionPoolBean" scope="application" />
+ --%>
+<jsp:useBean id="userDao" class="user.persistence.UserDAO" scope="session" />
+<%-- <jsp:setProperty name="userDao" property="pool" value="<%=conPool %>" /> --%>
+
 <style>
 	.txt0{
 		color:blue;

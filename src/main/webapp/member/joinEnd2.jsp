@@ -29,16 +29,18 @@
 	 user.setName(request.getParameter("name"));
 	 
 --%>
-<jsp:useBean id="userDao" class="user.persistence.UserDAO" scope="session"/>
+<%-- <jsp:useBean id="conPool" class="common.pool.ConnectionPoolBean" scope="application" /> --%>
+
+<jsp:useBean id="userDao" class="user.persistence.UserDAO" scope="session" />
+<%-- <jsp:setProperty name="userDao" property="pool" value="<%=conPool %>" /> --%>
 <% 
-	/*
+	
 	int n=0;
-	for(int i=1;i<31;i++){
-		user.setUserid(user.getUserid()+i);
+	//for(int i=1;i<31;i++){
+	//	user.setUserid(user.getUserid()+i);
 		n=userDao.createUser(user);		
-	}
-	*/
-	int n=userDao.createUser(user);
+	//}
+	
 	String msg=(n>0)?"로그인 페이지로 이동합니다":"회원가입 실패";
 	String loc=(n>0)?"../login/login.jsp":"javascript:history.back()";
 %>

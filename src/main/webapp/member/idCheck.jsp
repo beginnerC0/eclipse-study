@@ -35,11 +35,18 @@
 	//post방식일 경우 "아이디 사용 가능 여부"를 알려준다.
 	//사용자가 입력한 아이디값 받기
 	String userid=request.getParameter("userid");
-	
-	UserDAO dao=new UserDAO();
+%>
+	<%-- <jsp:useBean id="conPool" class="common.pool.ConnectionPoolBean" scope="application" /> --%>
+
+	<jsp:useBean id="userDao" class="user.persistence.UserDAO" scope="session" />
+	<%-- <jsp:setProperty name="userDao" property="pool" value="<%=conPool %>" /> --%>
+<% 
+	//ConnectionPoolBean conPool=new ConnectionPoolBean();
+	//UserDAO dao=new UserDAO();
+	//dao.setPool(conPool); 와 동일함
 	
 	//사용가능 여부 체크
-	boolean isUse=dao.idCheck(userid); 
+	boolean isUse=userDao.idCheck(userid); 
 	
 	if(isUse){
 	
